@@ -1,4 +1,4 @@
-package com.D2D.ShortUrl.entity;
+package com.D2D.ShortUrl.Entity;
 
 import java.net.MalformedURLException;
 import java.net.URL;

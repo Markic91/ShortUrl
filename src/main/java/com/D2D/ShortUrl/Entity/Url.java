@@ -1,4 +1,4 @@
-package com.D2D.ShortUrl.entity;
+package com.D2D.ShortUrl.Entity;
 
 public class Url {
 

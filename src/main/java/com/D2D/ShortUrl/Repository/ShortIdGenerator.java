@@ -1,4 +1,4 @@
-package com.D2D.ShortUrl.repository;
+package com.D2D.ShortUrl.Repository;
 
 import org.springframework.stereotype.Repository;
 
