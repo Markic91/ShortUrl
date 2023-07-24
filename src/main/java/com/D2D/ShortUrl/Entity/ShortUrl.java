@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeId;
 import java.net.MalformedURLException;
 import java.net.URL;
 public class ShortUrl {
-    @JsonTypeId
     private String id;
     private String shortId;
     private URL realUrl;

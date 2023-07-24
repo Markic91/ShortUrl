@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import java.security.SecureRandom;
 import java.util.Random;
+
 @Repository
 public class ShortIdGenerator {
     private String thisShortID;
@@ -12,7 +13,6 @@ public class ShortIdGenerator {
     }
 
     public String getThisShortID() {
-
         final char[] allowedChar= "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         SecureRandom random = new SecureRandom();
         StringBuilder shortId = new StringBuilder();
