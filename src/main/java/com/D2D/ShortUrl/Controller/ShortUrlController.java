@@ -23,8 +23,7 @@ public class ShortUrlController {
 
         ObjectToCreate.setId(uuidGenerator.getUuid().toString());
         ObjectToCreate.setShortId("recoucou");
-        String myUrl = url.getMyUrl().toString();
-        ObjectToCreate.setRealUrl(new URL(myUrl));
+        ObjectToCreate.setRealUrl(new URL(url.getMyUrl().toString()));
 
         return ObjectToCreate;
     }
