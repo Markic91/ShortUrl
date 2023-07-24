@@ -1,4 +1,4 @@
-package com.D2D.ShortUrl.Entity;
+package com.D2D.ShortUrl.entity;
 
 import java.net.URL;
 
