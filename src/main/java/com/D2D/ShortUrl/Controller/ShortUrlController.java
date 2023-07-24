@@ -2,6 +2,7 @@ package com.D2D.ShortUrl.Controller;
 
 import com.D2D.ShortUrl.Entity.ShortUrl;
 import com.D2D.ShortUrl.Entity.Url;
+//import com.D2D.ShortUrl.Repository.ShortIdGenerator;
 import com.D2D.ShortUrl.Repository.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,16 +16,15 @@ import java.net.URL;
 public class ShortUrlController {
     @Autowired
     UUIDGenerator uuidGenerator;
-
+//    @Autowired
+//    ShortIdGenerator shortIdGenerator;
 
     @PostMapping("/links")
-    public ShortUrl createUrlObject (@RequestBody Url url) throws MalformedURLException {
+    public ShortUrl createUrlObject (@RequestBody Url myNewUrl) throws MalformedURLException {
         ShortUrl ObjectToCreate = new ShortUrl();
-
         ObjectToCreate.setId(uuidGenerator.getUuid().toString());
-        ObjectToCreate.setShortId("recoucou");
-        String myUrl = url.getMyUrl().toString();
-        ObjectToCreate.setRealUrl(new URL(myUrl));
+//        ObjectToCreate.setShortId(shortIdGenerator.shortId());
+        ObjectToCreate.setRealUrl(new URL(myNewUrl.getMyUrl().toString()));
 
         return ObjectToCreate;
     }

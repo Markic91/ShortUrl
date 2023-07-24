@@ -1,6 +1,5 @@
 package com.D2D.ShortUrl.Repository;
 import org.springframework.stereotype.Repository;
-
 import java.util.UUID;
 @Repository
 public class UUIDGenerator {
