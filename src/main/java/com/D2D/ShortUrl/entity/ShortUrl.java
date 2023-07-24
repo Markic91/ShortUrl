@@ -1,14 +1,14 @@
 package com.D2D.ShortUrl.entity;
 
+import java.net.MalformedURLException;
 import java.net.URL;
-
 public class ShortUrl {
     private String id;
     private String shortId;
     private URL realUrl;
 
 
-    public ShortUrl() {
+    public ShortUrl() throws MalformedURLException {
     }
 
     public String getId() {
