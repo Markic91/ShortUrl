@@ -1,13 +1,10 @@
 package com.D2D.ShortUrl.repository;
 
-import com.D2D.ShortUrl.Entity.ShortUrl;
+import com.D2D.ShortUrl.entity.ShortUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 @Component

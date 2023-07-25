@@ -1,6 +1,6 @@
-package com.D2D.ShortUrl.Controller;
+package com.D2D.ShortUrl.controller;
 
-import com.D2D.ShortUrl.Entity.ShortUrl;
+import com.D2D.ShortUrl.entity.ShortUrl;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
