@@ -1,10 +1,13 @@
 package com.D2D.ShortUrl.service;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Random;
-@Repository
+
+@Component
 public class ShortIdGenerator {
     private String thisShortID;
 
@@ -12,7 +15,6 @@ public class ShortIdGenerator {
     }
 
     public String getThisShortID() {
-
         final char[] allowedChar= "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         SecureRandom random = new SecureRandom();
         StringBuilder shortId = new StringBuilder();
