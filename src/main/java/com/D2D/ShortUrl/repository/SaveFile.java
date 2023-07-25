@@ -1,22 +1,24 @@
 package com.D2D.ShortUrl.repository;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.D2D.ShortUrl.entity.ShortUrl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+
 @Component
 public class SaveFile {
 
-    public FileWriter createFile(File folder, String name) throws IOException {
+    public ObjectMapper createFile(File folder, String name, ArrayList<ShortUrl> array) throws IOException {
         File file = new File(folder, name + ".json");
         if(!file.exists()){
             Files.createFile(file.toPath());
         }
-        FileWriter fileToWrite = new FileWriter(file);
-        return fileToWrite;
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(file, array);
+        return objectMapper;
     }
 }

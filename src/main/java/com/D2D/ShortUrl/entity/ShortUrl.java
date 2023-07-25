@@ -1,6 +1,5 @@
-package com.D2D.ShortUrl.Entity;
+package com.D2D.ShortUrl.entity;
 
-import com.fasterxml.jackson.annotation.JsonTypeId;
 
 import java.net.MalformedURLException;
 import java.net.URL;
