@@ -22,12 +22,12 @@ public class ShortUrlController {
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
 
-//    private final ObjectMapper objectMapper;
+
 
     public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, ObjectMapper objectMapper){
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
-//        this.objectMapper = objectMapper;
+
     }
 
 
@@ -37,7 +37,7 @@ public class ShortUrlController {
         objectToCreate.setId(UUID.randomUUID().toString());
         objectToCreate.setShortId(shortIdGenerator.getThisShortID());
         objectToCreate.setRealUrl(new URL(myNewUrl.toString()));
-        this.savefile.createFile(new File("C:\\Users\\7902872D\\www"), "fileTest", objectToCreate);
+        this.savefile.createFile(new File("C:\\Users\\7303734s\\www\\sncf\\ShortUrl"), "fileTest", objectToCreate);
 
 
         return objectToCreate;
