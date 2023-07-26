@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.web.bind.annotation.*;
 import com.D2D.ShortUrl.repository.SaveFile;
 import org.springframework.web.servlet.ModelAndView;
+import com.D2D.ShortUrl.service.TokenGenerator;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -20,10 +21,14 @@ public class ShortUrlController {
 
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
+    private final TokenGenerator tokenGenerator;
 
-    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile) {
+
+    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator) {
+
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
+        this.tokenGenerator = tokenGenerator;
     }
 
 
