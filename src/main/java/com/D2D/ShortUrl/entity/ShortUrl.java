@@ -1,8 +1,13 @@
 package com.D2D.ShortUrl.entity;
 
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+@JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
+
 public class ShortUrl {
 
     private String id;

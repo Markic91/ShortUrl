@@ -8,23 +8,11 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 
-/*public class SaveFile {
 
-   public ObjectMapper createFile(File folder, String name, ShortUrl content) throws IOException {
-        File file = new File(folder, name + ".json");
-        if(!file.exists()){
-            Files.createFile(file.toPath());
-        }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(file, content);
-        return objectMapper;
-    }
-} */
 
 @Component
 public class SaveFile {
@@ -59,7 +47,7 @@ public class SaveFile {
         }
     }
 
-    private List<ShortUrl> readExistingData(File file) throws IOException {
+    public List<ShortUrl> readExistingData(File file) throws IOException {
         if (file.exists()) {
             return objectMapper.readValue(file, new TypeReference<List<ShortUrl>>() {});
         }
