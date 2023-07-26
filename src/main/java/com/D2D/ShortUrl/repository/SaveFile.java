@@ -8,10 +8,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Component
 public class SaveFile {
@@ -46,7 +44,7 @@ public class SaveFile {
         }
     }
 
-    private List<ShortUrl> readExistingData(File file) throws IOException {
+    public List<ShortUrl> readExistingData(File file) throws IOException {
         if (file.exists()) {
             return objectMapper.readValue(file, new TypeReference<List<ShortUrl>>() {});
         }
