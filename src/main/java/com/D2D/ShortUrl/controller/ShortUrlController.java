@@ -3,6 +3,7 @@ package com.D2D.ShortUrl.controller;
 import com.D2D.ShortUrl.entity.ShortUrl;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
 
+import com.D2D.ShortUrl.service.TokenGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,18 +22,19 @@ public class ShortUrlController {
 
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
+    private final TokenGenerator tokenGenerator;
 
 
-
-    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, ObjectMapper objectMapper){
+    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator, ObjectMapper objectMapper) {
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
+        this.tokenGenerator = tokenGenerator;
 
     }
 
 
     @PostMapping("/links")
-    public ShortUrl createUrlObject (@RequestBody URL myNewUrl) throws MalformedURLException, IOException {
+    public ShortUrl createUrlObject(@RequestBody URL myNewUrl) throws MalformedURLException, IOException {
         ShortUrl objectToCreate = new ShortUrl();
         objectToCreate.setId(UUID.randomUUID().toString());
         objectToCreate.setShortId(shortIdGenerator.getThisShortID());
