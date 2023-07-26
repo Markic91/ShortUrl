@@ -11,12 +11,7 @@ public class TokenGenerator {
     private static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int tokenLength = 40;
 
-    public static void main(String[] args) {
-        String token = generateToken();
-        System.out.println(token);
-    }
-
-    private static String generateToken() {
+    public static String generateToken() {
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder sb = new StringBuilder(tokenLength);
 
