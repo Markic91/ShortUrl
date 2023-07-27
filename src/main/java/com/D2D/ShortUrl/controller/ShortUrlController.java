@@ -48,8 +48,7 @@ public class ShortUrlController {
             this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", objectToCreate);
             return new ResponseEntity<>(objectToCreate, headers, HttpStatus.CREATED);
         }
-        String message = "url invalid";
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("invalid url", HttpStatus.BAD_REQUEST);
 
     }
 
