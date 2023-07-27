@@ -5,16 +5,14 @@ import com.D2D.ShortUrl.service.ShortIdGenerator;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.D2D.ShortUrl.repository.SaveFile;
 import org.springframework.web.servlet.ModelAndView;
 import com.D2D.ShortUrl.service.TokenGenerator;
 
 import java.io.*;
+import java.net.HttpRetryException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -50,7 +48,9 @@ public class ShortUrlController {
             this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", objectToCreate);
             return new ResponseEntity<>(objectToCreate, headers, HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        String message = "url invalid";
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+
     }
 
     @GetMapping("/{shortId}")
