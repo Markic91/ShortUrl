@@ -3,6 +3,7 @@ package com.D2D.ShortUrl.repository;
 import com.D2D.ShortUrl.entity.ShortUrl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -19,9 +20,11 @@ public class SaveFile {
 
     public SaveFile() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
     //Le constructor de la classe savefile initialise 'objectMapper' en créant une nelle instance
-    // de ObjectMapper pour l'utiliser pour les opérations de sérialisation et déblabla
+    // de ObjectMapper pour l'utiliser pour les opérations de sérialisation et désérilisation
+    // INDENT_OUTPUT permet l'indentation du fichier JSON
 
     public void createFile(File folder, String name, ShortUrl content) throws IOException {
         File file = new File(folder, name + ".json");
@@ -46,7 +49,8 @@ public class SaveFile {
 
     public List<ShortUrl> readExistingData(File file) throws IOException {
         if (file.exists()) {
-            return objectMapper.readValue(file, new TypeReference<List<ShortUrl>>() {});
+            return objectMapper.readValue(file, new TypeReference<List<ShortUrl>>() {
+            });
         }
         return new ArrayList<>();
     }
