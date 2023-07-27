@@ -2,8 +2,9 @@ package com.D2D.ShortUrl.controller;
 
 import com.D2D.ShortUrl.entity.ShortUrl;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
+import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,33 +27,37 @@ public class ShortUrlController {
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
     private final TokenGenerator tokenGenerator;
+    private final VerificationUrl verificationUrl;
 
-    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator) {
+    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator, VerificationUrl verificationUrl) {
 
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
         this.tokenGenerator = tokenGenerator;
+        this.verificationUrl = verificationUrl;
     }
 
     @PostMapping("/links")
     public ResponseEntity<?> createUrlObject(@RequestBody URL myNewUrl) throws MalformedURLException, IOException {
-        ShortUrl objectToCreate = new ShortUrl();
-        objectToCreate.setId(UUID.randomUUID().toString());
-        objectToCreate.setShortId(shortIdGenerator.getThisShortID());
-        objectToCreate.setRealUrl(new URL(myNewUrl.toString()));
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Removal-Token", this.tokenGenerator.generateToken());
-        this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", objectToCreate);
-        return new ResponseEntity<>(objectToCreate, headers, HttpStatus.CREATED);
+        if (this.verificationUrl.checkUrl(myNewUrl)) {
+            ShortUrl objectToCreate = new ShortUrl();
+            objectToCreate.setId(UUID.randomUUID().toString());
+            objectToCreate.setShortId(shortIdGenerator.getThisShortID());
+            objectToCreate.setRealUrl(new URL(myNewUrl.toString()));
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("X-Removal-Token", this.tokenGenerator.generateToken());
+            this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", objectToCreate);
+            return new ResponseEntity<>(objectToCreate, headers, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/{shortId}")
     public ModelAndView redirectTo(@PathVariable String shortId) {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
-            ShortUrl[] shortsUrl = mapper.readValue(new File("C:\\Users\\9101015H\\www\\fileTest.json"), ShortUrl[].class);
+            ShortUrl[] shortsUrl = mapper.readValue(new File("C:\\Users\\7902872D\\www\\fileTest.json"), ShortUrl[].class);
             for (ShortUrl shortUrl : shortsUrl) {
                 if (shortId.equals(shortUrl.getShortId())) {
                     String realUrl = shortUrl.getRealUrl().toString();
