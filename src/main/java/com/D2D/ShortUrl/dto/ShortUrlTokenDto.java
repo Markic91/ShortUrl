@@ -1,21 +1,21 @@
-package com.D2D.ShortUrl.entity;
-
+package com.D2D.ShortUrl.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-@JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
 
-public class ShortUrl {
+@Component
+@JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
+public class ShortUrlTokenDto {
 
     private String id;
     private String shortId;
     private URL realUrl;
+    private String removalToken;
 
-
-    public ShortUrl() throws MalformedURLException {
+    public ShortUrlTokenDto() {
     }
 
     public String getId() {
@@ -40,5 +40,13 @@ public class ShortUrl {
 
     public void setRealUrl(URL realUrl) {
         this.realUrl = realUrl;
+    }
+
+    public String getRemovalToken() {
+        return removalToken;
+    }
+
+    public void setRemovalToken(String removalToken) {
+        this.removalToken = removalToken;
     }
 }

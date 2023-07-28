@@ -1,6 +1,8 @@
 package com.D2D.ShortUrl.repository;
 
-import com.D2D.ShortUrl.entity.ShortUrl;
+import com.D2D.ShortUrl.dto.ShortUrlDto;
+import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
+//import com.D2D.ShortUrl.entity.ShortUrl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -26,7 +28,7 @@ public class SaveFile {
     // de ObjectMapper pour l'utiliser pour les opérations de sérialisation et désérilisation
     // INDENT_OUTPUT permet l'indentation du fichier JSON
 
-    public void createFile(File folder, String name, ShortUrl content) throws IOException {
+    public void createFile(File folder, String name, ShortUrlTokenDto content) throws IOException {
         File file = new File(folder, name + ".json");
 
         if (!file.exists()) {
@@ -36,7 +38,7 @@ public class SaveFile {
             }
         }
 
-        List<ShortUrl> existingContent = readExistingData(file);
+        List<ShortUrlTokenDto> existingContent = readExistingData(file);
         //Appelle la méthode readExistingData pour lire le contenu existant
         // du fichier en une liste d'objets ShortUrl.
         existingContent.add(content);
@@ -47,9 +49,9 @@ public class SaveFile {
         }
     }
 
-    public List<ShortUrl> readExistingData(File file) throws IOException {
+    public List<ShortUrlTokenDto> readExistingData(File file) throws IOException {
         if (file.exists()) {
-            return objectMapper.readValue(file, new TypeReference<List<ShortUrl>>() {
+            return objectMapper.readValue(file, new TypeReference<List<ShortUrlTokenDto>>() {
             });
         }
         return new ArrayList<>();
