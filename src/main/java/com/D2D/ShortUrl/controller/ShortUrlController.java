@@ -80,19 +80,20 @@ public class ShortUrlController {
     }
 
     @DeleteMapping("/links/{id}")
-    public List<ShortUrlTokenDto> deleteUrlObject(@PathVariable String id) throws IOException {
+    public List<ShortUrlTokenDto> deleteUrlObject(@PathVariable String id, @RequestHeader("token") String token) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT); //Pour renvoi à la ligne dans le fichier JSON
         File file = new File("C:\\Users\\9101015H\\www\\fileTest.json");
         ShortUrlTokenDto[] shortsUrl = mapper.readValue(file, ShortUrlTokenDto[].class);
         List<ShortUrlTokenDto> x = new ArrayList<>();
         for (int i = 0; i < shortsUrl.length; i++) {
-            if (!id.equals(shortsUrl[i].getId())) {
+            String z = shortsUrl[i].getRemovalToken();
+            if (!id.equals(shortsUrl[i].getId()) || !token.equals(shortsUrl[i].getRemovalToken())) {
                 x.add(shortsUrl[i]);
-                System.out.println(x.size());
             }
         }
         mapper.writeValue(file, x);
         return x;
     }
 }
+//
