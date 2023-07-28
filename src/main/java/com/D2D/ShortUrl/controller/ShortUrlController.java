@@ -41,27 +41,25 @@ public class ShortUrlController {
 
     @PostMapping("/links")
     public ResponseEntity<?> createUrlObject(@RequestBody URL myNewUrl) throws MalformedURLException, IOException {
-        if (this.verificationUrl.checkUrl(myNewUrl)) {
-
-            ShortUrlDto shortUtlDto = new ShortUrlDto();
-            shortUtlDto.setId(UUID.randomUUID().toString());
-            shortUtlDto.setShortId(shortIdGenerator.getThisShortID());
-            shortUtlDto.setRealUrl(new URL(myNewUrl.toString()));
-
-            ShortUrlTokenDto shortUrlDtoToken = new ShortUrlTokenDto();
-            shortUrlDtoToken.setId(shortUtlDto.getId());
-            shortUrlDtoToken.setShortId(shortUtlDto.getShortId());
-            shortUrlDtoToken.setRealUrl(shortUtlDto.getRealUrl());
-            shortUrlDtoToken.setRemovalToken(this.tokenGenerator.generateToken());
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", shortUrlDtoToken);
-            headers.add("X-Removal-Token", shortUrlDtoToken.getRemovalToken());
-            return new ResponseEntity<>(shortUtlDto, headers, HttpStatus.CREATED);
+        if (!this.verificationUrl.checkUrl(myNewUrl)) {
+            return new ResponseEntity<>("invalid url", HttpStatus.BAD_REQUEST);
         }
-        String message = "url invalid";
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        ShortUrlDto shortUtlDto = new ShortUrlDto();
+        shortUtlDto.setId(UUID.randomUUID().toString());
+        shortUtlDto.setShortId(shortIdGenerator.getThisShortID());
+        shortUtlDto.setRealUrl(new URL(myNewUrl.toString()));
+
+        ShortUrlTokenDto shortUrlDtoToken = new ShortUrlTokenDto();
+        shortUrlDtoToken.setId(shortUtlDto.getId());
+        shortUrlDtoToken.setShortId(shortUtlDto.getShortId());
+        shortUrlDtoToken.setRealUrl(shortUtlDto.getRealUrl());
+        shortUrlDtoToken.setRemovalToken(this.tokenGenerator.generateToken());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", shortUrlDtoToken);
+        headers.add("X-Removal-Token", shortUrlDtoToken.getRemovalToken());
+        return new ResponseEntity<>(shortUtlDto, headers, HttpStatus.CREATED);
 
     }
 

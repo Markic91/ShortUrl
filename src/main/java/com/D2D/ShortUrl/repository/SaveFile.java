@@ -18,11 +18,11 @@ import java.util.Optional;
 @Component
 public class SaveFile {
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
 
-    public SaveFile() {
-        this.objectMapper = new ObjectMapper();
+    public SaveFile(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
     //Le constructor de la classe savefile initialise 'objectMapper' en créant une nelle instance
@@ -39,6 +39,7 @@ public class SaveFile {
             }
         }
 
+
         List<ShortUrlTokenDto> existingContent = readExistingData(file).orElseGet(ArrayList::new); //affichage court pour ()-> new ArrayList
         //Appelle la méthode readExistingData pour lire le contenu existant
         // du fichier en une liste d'objets ShortUrl.
@@ -52,6 +53,7 @@ public class SaveFile {
 
 
     public Optional<List<ShortUrlTokenDto>> readExistingData(File file) throws IOException {
+
         return file.exists()
                 ? Optional.of(objectMapper.readValue(file, new TypeReference<>() {
         }))
