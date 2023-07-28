@@ -5,7 +5,7 @@ import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.D2D.ShortUrl.repository.SaveFile;
@@ -60,7 +60,6 @@ public class ShortUrlController {
         this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", shortUrlDtoToken);
         headers.add("X-Removal-Token", shortUrlDtoToken.getRemovalToken());
         return new ResponseEntity<>(shortUtlDto, headers, HttpStatus.CREATED);
-
     }
 
     @GetMapping("/{shortId}")
@@ -78,5 +77,22 @@ public class ShortUrlController {
             e.printStackTrace();
         }
         return new ModelAndView("redirect://www.google.com");
+    }
+
+    @DeleteMapping("/links/{id}")
+    public List<ShortUrlTokenDto> deleteUrlObject(@PathVariable String id) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT); //Pour renvoi à la ligne dans le fichier JSON
+        File file = new File("C:\\Users\\9101015H\\www\\fileTest.json");
+        ShortUrlTokenDto[] shortsUrl = mapper.readValue(file, ShortUrlTokenDto[].class);
+        List<ShortUrlTokenDto> x = new ArrayList<>();
+        for (int i = 0; i < shortsUrl.length; i++) {
+            if (!id.equals(shortsUrl[i].getId())) {
+                x.add(shortsUrl[i]);
+                System.out.println(x.size());
+            }
+        }
+        mapper.writeValue(file, x);
+        return x;
     }
 }
