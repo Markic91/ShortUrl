@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class SaveFile {
@@ -38,7 +39,7 @@ public class SaveFile {
             }
         }
 
-        List<ShortUrlTokenDto> existingContent = readExistingData(file);
+        List<ShortUrlTokenDto> existingContent = readExistingData(file).orElseGet(ArrayList::new); //affichage court pour ()-> new ArrayList
         //Appelle la méthode readExistingData pour lire le contenu existant
         // du fichier en une liste d'objets ShortUrl.
         existingContent.add(content);
@@ -49,11 +50,11 @@ public class SaveFile {
         }
     }
 
-    public List<ShortUrlTokenDto> readExistingData(File file) throws IOException {
-        if (file.exists()) {
-            return objectMapper.readValue(file, new TypeReference<List<ShortUrlTokenDto>>() {
-            });
-        }
-        return new ArrayList<>();
+
+    public Optional<List<ShortUrlTokenDto>> readExistingData(File file) throws IOException {
+        return file.exists()
+                ? Optional.of(objectMapper.readValue(file, new TypeReference<>() {
+        }))
+                : Optional.empty();
     }
 }
