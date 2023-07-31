@@ -2,7 +2,6 @@ package com.D2D.ShortUrl.controller;
 
 import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
-import com.D2D.ShortUrl.service.ShortIdGenerator;
 import com.D2D.ShortUrl.service.ShortUrlMapper;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +11,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.D2D.ShortUrl.repository.SaveFile;
 import org.springframework.web.servlet.ModelAndView;
-import com.D2D.ShortUrl.service.TokenGenerator;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -23,20 +21,17 @@ import java.util.*;
 @RestController
 public class ShortUrlController {
 
-    private final ShortIdGenerator shortIdGenerator;
+
     private final SaveFile savefile;
-    //    private final TokenGenerator tokenGenerator;
+
     private final VerificationUrl verificationUrl;
-    //    private final ShortUrlDto shortUrlDto;
-//    private final ShortUrlTokenDto shortUrlTokenDto;
-    private final ShortUrlMapper shortUrlMapper;
 
-    public ShortUrlController(ShortUrlMapper shortUrlMapper, ShortIdGenerator shortIdGenerator, SaveFile saveFile, VerificationUrl verificationUrl) {
 
-        this.shortIdGenerator = shortIdGenerator;
+    public ShortUrlController(SaveFile saveFile, VerificationUrl verificationUrl) {
+
         this.savefile = saveFile;
         this.verificationUrl = verificationUrl;
-        this.shortUrlMapper = shortUrlMapper;
+
     }
 
     @PostMapping("/links")

@@ -4,7 +4,6 @@ import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
