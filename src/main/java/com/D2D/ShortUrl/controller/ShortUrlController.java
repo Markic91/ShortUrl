@@ -3,6 +3,7 @@ package com.D2D.ShortUrl.controller;
 import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
+import com.D2D.ShortUrl.service.ShortUrlMapper;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,7 +11,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import com.D2D.ShortUrl.repository.SaveFile;
 import org.springframework.web.servlet.ModelAndView;
-import com.D2D.ShortUrl.service.TokenGenerator;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -24,19 +24,15 @@ public class ShortUrlController {
 
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
-    private final TokenGenerator tokenGenerator;
     private final VerificationUrl verificationUrl;
-    private final ShortUrlDto shortUrlDto;
-    private final ShortUrlTokenDto shortUrlTokenDto;
+    private final ShortUrlMapper shortUrlMapper;
 
-    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator, VerificationUrl verificationUrl, ShortUrlDto shortUrlDto, ShortUrlTokenDto shortUrlTokenDto) {
+    public ShortUrlController(ShortUrlMapper shortUrlMapper, ShortIdGenerator shortIdGenerator, SaveFile saveFile, VerificationUrl verificationUrl) {
 
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
-        this.tokenGenerator = tokenGenerator;
         this.verificationUrl = verificationUrl;
-        this.shortUrlDto = shortUrlDto;
-        this.shortUrlTokenDto = shortUrlTokenDto;
+        this.shortUrlMapper = shortUrlMapper;
     }
 
     @PostMapping("/links")
@@ -44,22 +40,15 @@ public class ShortUrlController {
         if (!this.verificationUrl.checkUrl(myNewUrl)) {
             return new ResponseEntity<>("invalid url", HttpStatus.BAD_REQUEST);
         }
-        ShortUrlDto shortUtlDto = new ShortUrlDto();
-        shortUtlDto.setId(UUID.randomUUID().toString());
-        shortUtlDto.setShortId(shortIdGenerator.getThisShortID());
-        shortUtlDto.setRealUrl(new URL(myNewUrl.toString()));
-
-        ShortUrlTokenDto shortUrlDtoToken = new ShortUrlTokenDto();
-        shortUrlDtoToken.setId(shortUtlDto.getId());
-        shortUrlDtoToken.setShortId(shortUtlDto.getShortId());
-        shortUrlDtoToken.setRealUrl(shortUtlDto.getRealUrl());
-        shortUrlDtoToken.setRemovalToken(this.tokenGenerator.generateToken());
+        ShortUrlDto shortUrl = ShortUrlMapper.toShortUrlDto(myNewUrl);
+        ShortUrlTokenDto shortUrlToken = ShortUrlMapper.toShortUrlTokenDto(shortUrl);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", shortUrlDtoToken);
-        headers.add("X-Removal-Token", shortUrlDtoToken.getRemovalToken());
-        return new ResponseEntity<>(shortUtlDto, headers, HttpStatus.CREATED);
+        this.savefile.createFile(new File("C:\\Users\\9101015H\\www\\"), "fileTest", shortUrlToken);
+        headers.add("X-Removal-Token", shortUrlToken.getRemovalToken());
+        return new ResponseEntity<>(shortUrl, headers, HttpStatus.CREATED);
+
     }
 
     @GetMapping("/{shortId}")
@@ -80,20 +69,21 @@ public class ShortUrlController {
     }
 
     @DeleteMapping("/links/{id}")
-    public List<ShortUrlTokenDto> deleteUrlObject(@PathVariable String id, @RequestHeader("token") String token) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT); //Pour renvoi à la ligne dans le fichier JSON
+    public ResponseEntity<?> deleteShortUrl(@PathVariable String id, @RequestHeader("X-Removal-Token") String token) {
         File file = new File("C:\\Users\\9101015H\\www\\fileTest.json");
-        ShortUrlTokenDto[] shortsUrl = mapper.readValue(file, ShortUrlTokenDto[].class);
-        List<ShortUrlTokenDto> x = new ArrayList<>();
-        for (int i = 0; i < shortsUrl.length; i++) {
-            String z = shortsUrl[i].getRemovalToken();
-            if (!id.equals(shortsUrl[i].getId()) || !token.equals(shortsUrl[i].getRemovalToken())) {
-                x.add(shortsUrl[i]);
-            }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            ShortUrlTokenDto[] shortsUrl = mapper.readValue(file, ShortUrlTokenDto[].class);
+            shortsUrl = Arrays.stream(shortsUrl).filter(item ->
+                            ((!item.getId().equals(id)) || (!item.getRemovalToken().equals(token))))
+                    .toArray(ShortUrlTokenDto[]::new);
+            mapper.writeValue(file, shortsUrl);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        mapper.writeValue(file, x);
-        return x;
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
-//
