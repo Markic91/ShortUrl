@@ -2,6 +2,7 @@ package com.D2D.ShortUrl.controller;
 
 import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
+
 import com.D2D.ShortUrl.service.ShortUrlMapper;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,17 +22,13 @@ import java.util.*;
 @RestController
 public class ShortUrlController {
 
-
     private final SaveFile savefile;
-
     private final VerificationUrl verificationUrl;
 
 
     public ShortUrlController(SaveFile saveFile, VerificationUrl verificationUrl) {
-
         this.savefile = saveFile;
         this.verificationUrl = verificationUrl;
-
     }
 
     @PostMapping("/links")
@@ -41,7 +38,6 @@ public class ShortUrlController {
         }
         ShortUrlDto shortUrl = ShortUrlMapper.toShortUrlDto(myNewUrl);
         ShortUrlTokenDto shortUrlToken = ShortUrlMapper.toShortUrlTokenDto(shortUrl);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", shortUrlToken);
