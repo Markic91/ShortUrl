@@ -6,6 +6,8 @@ import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -20,6 +22,8 @@ public class SaveFile {
 
     private final ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
+//    @Value("${file.path}")
+//    private File file;
 
     public SaveFile(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

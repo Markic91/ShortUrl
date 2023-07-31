@@ -3,6 +3,7 @@ package com.D2D.ShortUrl.controller;
 import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import com.D2D.ShortUrl.service.ShortIdGenerator;
+import com.D2D.ShortUrl.service.ShortUrlMapper;
 import com.D2D.ShortUrl.service.VerificationUrl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,22 +23,20 @@ import java.util.*;
 @RestController
 public class ShortUrlController {
 
-
     private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
-    private final TokenGenerator tokenGenerator;
+    //    private final TokenGenerator tokenGenerator;
     private final VerificationUrl verificationUrl;
-    private final ShortUrlDto shortUrlDto;
-    private final ShortUrlTokenDto shortUrlTokenDto;
+    //    private final ShortUrlDto shortUrlDto;
+//    private final ShortUrlTokenDto shortUrlTokenDto;
+    private final ShortUrlMapper shortUrlMapper;
 
-    public ShortUrlController(ShortIdGenerator shortIdGenerator, SaveFile saveFile, TokenGenerator tokenGenerator, VerificationUrl verificationUrl, ShortUrlDto shortUrlDto, ShortUrlTokenDto shortUrlTokenDto) {
+    public ShortUrlController(ShortUrlMapper shortUrlMapper, ShortIdGenerator shortIdGenerator, SaveFile saveFile, VerificationUrl verificationUrl) {
 
         this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
-        this.tokenGenerator = tokenGenerator;
         this.verificationUrl = verificationUrl;
-        this.shortUrlDto = shortUrlDto;
-        this.shortUrlTokenDto = shortUrlTokenDto;
+        this.shortUrlMapper = shortUrlMapper;
     }
 
     @PostMapping("/links")
@@ -45,22 +44,14 @@ public class ShortUrlController {
         if (!this.verificationUrl.checkUrl(myNewUrl)) {
             return new ResponseEntity<>("invalid url", HttpStatus.BAD_REQUEST);
         }
-        ShortUrlDto shortUtlDto = new ShortUrlDto();
-        shortUtlDto.setId(UUID.randomUUID().toString());
-        shortUtlDto.setShortId(shortIdGenerator.getThisShortID());
-        shortUtlDto.setRealUrl(new URL(myNewUrl.toString()));
-
-        ShortUrlTokenDto shortUrlDtoToken = new ShortUrlTokenDto();
-        shortUrlDtoToken.setId(shortUtlDto.getId());
-        shortUrlDtoToken.setShortId(shortUtlDto.getShortId());
-        shortUrlDtoToken.setRealUrl(shortUtlDto.getRealUrl());
-        shortUrlDtoToken.setRemovalToken(this.tokenGenerator.generateToken());
+        ShortUrlDto shortUrl = ShortUrlMapper.toShortUrlDto(myNewUrl);
+        ShortUrlTokenDto shortUrlToken = ShortUrlMapper.toShortUrlTokenDto(shortUrl);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", shortUrlDtoToken);
-        headers.add("X-Removal-Token", shortUrlDtoToken.getRemovalToken());
-        return new ResponseEntity<>(shortUtlDto, headers, HttpStatus.CREATED);
+        this.savefile.createFile(new File("C:\\Users\\7902872D\\www\\"), "fileTest", shortUrlToken);
+        headers.add("X-Removal-Token", shortUrlToken.getRemovalToken());
+        return new ResponseEntity<>(shortUrl, headers, HttpStatus.CREATED);
 
     }
 
@@ -82,7 +73,7 @@ public class ShortUrlController {
     }
 
     @DeleteMapping("/links/{id}")
-    public ResponseEntity<?> deleteShortUrl(@PathVariable String id, @RequestHeader("X-Removal-Token") String token) throws IOException {
+    public ResponseEntity<?> deleteShortUrl(@PathVariable String id, @RequestHeader("X-Removal-Token") String token) {
         File file = new File("C:\\Users\\7902872D\\www\\fileTest.json");
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
