@@ -1,12 +1,9 @@
 package com.D2D.ShortUrl.repository;
 
-import com.D2D.ShortUrl.dto.ShortUrlDto;
 import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
-//import com.D2D.ShortUrl.entity.ShortUrl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,19 +19,23 @@ public class SaveFile {
 
     private final ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
-//    @Value("${file.path}")
-//    private File file;
+    private final File filePath;
 
-    public SaveFile(ObjectMapper objectMapper) {
+    public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath) {
         this.objectMapper = objectMapper;
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        this.filePath = filePath;
     }
     //Le constructor de la classe savefile initialise 'objectMapper' en créant une nelle instance
     // de ObjectMapper pour l'utiliser pour les opérations de sérialisation et désérilisation
     // INDENT_OUTPUT permet l'indentation du fichier JSON
 
-    public void createFile(File folder, String name, ShortUrlTokenDto content) throws IOException {
-        File file = new File(folder, name + ".json");
+    public File getFilePath() {
+        return filePath;
+    }
+
+    public void createFile(ShortUrlTokenDto content) throws IOException {
+        File file = filePath;
 
         if (!file.exists()) {
             // Créer un nouveau fichier avec un tableau JSON vide
