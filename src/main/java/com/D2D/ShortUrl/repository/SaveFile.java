@@ -6,6 +6,7 @@ import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,6 +26,7 @@ public class SaveFile {
         this.objectMapper = objectMapper;
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
+
     //Le constructor de la classe savefile initialise 'objectMapper' en créant une nelle instance
     // de ObjectMapper pour l'utiliser pour les opérations de sérialisation et désérilisation
     // INDENT_OUTPUT permet l'indentation du fichier JSON
@@ -39,7 +41,6 @@ public class SaveFile {
             }
         }
 
-
         List<ShortUrlTokenDto> existingContent = readExistingData(file).orElseGet(ArrayList::new); //affichage court pour ()-> new ArrayList
         //Appelle la méthode readExistingData pour lire le contenu existant
         // du fichier en une liste d'objets ShortUrl.
@@ -50,7 +51,6 @@ public class SaveFile {
             objectMapper.writeValue(fileWriter, existingContent);
         }
     }
-
 
     public Optional<List<ShortUrlTokenDto>> readExistingData(File file) throws IOException {
 

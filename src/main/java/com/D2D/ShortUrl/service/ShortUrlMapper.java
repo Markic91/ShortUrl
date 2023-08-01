@@ -11,18 +11,16 @@ import java.util.UUID;
 @Component
 public class ShortUrlMapper {
     private static ShortIdGenerator shortIdGenerator;
-    private static TokenGenerator tokenGenerator;
 
 
-    public ShortUrlMapper(ShortIdGenerator shortIdGenerator, TokenGenerator tokenGenerator) {
-        this.shortIdGenerator = shortIdGenerator;
-        this.tokenGenerator = tokenGenerator;
+    public ShortUrlMapper(ShortIdGenerator shortIdGenerator) {
+        ShortUrlMapper.shortIdGenerator = shortIdGenerator;
     }
 
     public static ShortUrlDto toShortUrlDto(URL myNewUrl) throws MalformedURLException {
         ShortUrlDto shortUrlDto = new ShortUrlDto();
         shortUrlDto.setId(UUID.randomUUID().toString());
-        shortUrlDto.setShortId(shortIdGenerator.getThisShortID());
+        shortUrlDto.setShortId(ShortIdGenerator.getThisShortID());
         shortUrlDto.setRealUrl(new URL(myNewUrl.toString()));
         return shortUrlDto;
     }
@@ -32,7 +30,7 @@ public class ShortUrlMapper {
         shortUrlTokenDto.setId(shortUrlDto.getId());
         shortUrlTokenDto.setShortId(shortUrlDto.getShortId());
         shortUrlTokenDto.setRealUrl(shortUrlDto.getRealUrl());
-        shortUrlTokenDto.setRemovalToken(tokenGenerator.generateToken());
+        shortUrlTokenDto.setRemovalToken(TokenGenerator.generateToken());
         return shortUrlTokenDto;
     }
 }

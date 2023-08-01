@@ -22,14 +22,12 @@ import java.util.*;
 public class ShortUrlController {
 
 
-    private final ShortIdGenerator shortIdGenerator;
     private final SaveFile savefile;
     private final VerificationUrl verificationUrl;
     private final ShortUrlMapper shortUrlMapper;
 
     public ShortUrlController(ShortUrlMapper shortUrlMapper, ShortIdGenerator shortIdGenerator, SaveFile saveFile, VerificationUrl verificationUrl) {
 
-        this.shortIdGenerator = shortIdGenerator;
         this.savefile = saveFile;
         this.verificationUrl = verificationUrl;
         this.shortUrlMapper = shortUrlMapper;
