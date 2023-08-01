@@ -21,6 +21,7 @@ public class SaveFile {
     private static ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
     private final File filePath;
+    private List<ShortUrlObject> existingContent;
 
     public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath) {
         this.objectMapper = objectMapper;
@@ -36,6 +37,11 @@ public class SaveFile {
         return filePath;
     }
 
+    public List<ShortUrlObject> getExistingContent() {
+        return existingContent;
+    }
+
+
     @PostConstruct
     public void createFile() {
         File filePath = getFilePath();
@@ -45,19 +51,25 @@ public class SaveFile {
                     objectMapper.writeValue(fileWriter, new ArrayList<>());
                 }
             }
+            this.existingContent = readExistingData(filePath).orElseGet(ArrayList::new);
+
         } catch (IOException e) {
             System.out.println("Une erreur s'est produite lors de la création du fichier : " + e.getMessage());
         }
     }
 
-    public List<ShortUrlObject> addContent(ShortUrlObject content) throws IOException {
-        File filePath = getFilePath();
-        List<ShortUrlObject> existingContent = readExistingData(filePath).orElseGet(ArrayList::new);
-        existingContent.add(content);
+    public void addContent(ShortUrlObject content) throws IOException {
+        this.existingContent.add(content);
         try (FileWriter fileWriter = new FileWriter(filePath)) {
-            objectMapper.writeValue(fileWriter, existingContent);
+            objectMapper.writeValue(fileWriter, this.existingContent);
         }
-        return existingContent;
+    }
+
+    public void deleteContent(ShortUrlObject shortUrlObject) throws IOException {
+        this.existingContent.remove(shortUrlObject);
+        try (FileWriter fileWriter = new FileWriter(filePath)) {
+            objectMapper.writeValue(fileWriter, this.existingContent);
+        }
     }
 
     public static Optional<List<ShortUrlObject>> readExistingData(File file) throws IOException {

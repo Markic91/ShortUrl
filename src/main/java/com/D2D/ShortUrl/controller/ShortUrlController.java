@@ -37,12 +37,12 @@ public class ShortUrlController {
     }
 
     @GetMapping("/{shortId}")
-    public ModelAndView redirectTo(@PathVariable String shortId) throws IOException {
+    public ModelAndView redirectTo(@PathVariable String shortId) {
         return new ModelAndView("redirect:" + ShortUrlService.readShortUrl(shortId));
     }
 
     @DeleteMapping("/links/{id}")
-    public ResponseEntity<?> deleteShortUrl(@PathVariable String id, @RequestHeader("X-Removal-Token") String token) {
+    public ResponseEntity<?> deleteShortUrl(@PathVariable String id, @RequestHeader("X-Removal-Token") String token) throws IOException {
         return (ShortUrlService.deleteOneShortUrl(id, token)) ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

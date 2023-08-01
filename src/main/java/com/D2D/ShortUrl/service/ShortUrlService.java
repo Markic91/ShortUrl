@@ -1,16 +1,11 @@
 package com.D2D.ShortUrl.service;
 
-import com.D2D.ShortUrl.entity.ShortUrlMapper;
 import com.D2D.ShortUrl.entity.ShortUrlObject;
 import com.D2D.ShortUrl.repository.SaveFile;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,33 +36,24 @@ public class ShortUrlService {
         return false;
     }
 
-    public static String readShortUrl(String shortId) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        File file = savefile.getFilePath();
-        ShortUrlObject[] shortsUrl = mapper.readValue(file, ShortUrlObject[].class);
-        for (ShortUrlObject shortUrl : shortsUrl) {
-            if (shortId.equals(shortUrl.getShortId())) {
-                return shortUrl.getRealUrl().toString();
+    public static String readShortUrl(String shortId) {
+        List<ShortUrlObject> list = savefile.getExistingContent();
+        for (ShortUrlObject item : list) {
+            if (shortId.equals(item.getShortId())) {
+                return item.getRealUrl().toString();
             }
         }
         return null;
     }
 
 
-    public static Boolean deleteOneShortUrl(String id, String token) {
-        ObjectMapper mapper = new ObjectMapper();
-        File file = savefile.getFilePath();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        try {
-            ShortUrlObject[] shortsUrl = mapper.readValue(file, ShortUrlObject[].class);
-            shortsUrl = Arrays.stream(shortsUrl).filter(item ->
-                            ((!item.getId().equals(id)) || (!item.getRemovalToken().equals(token))))
-                    .toArray(ShortUrlObject[]::new);
-            mapper.writeValue(file, shortsUrl);
-            return true;
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static Boolean deleteOneShortUrl(String id, String token) throws IOException {
+        List<ShortUrlObject> list = savefile.getExistingContent();
+        for (ShortUrlObject item : list) {
+            if ((id.equals(item.getId())) && (token.equals(item.getRemovalToken()))) {
+                savefile.deleteContent(item);
+                return true;
+            }
         }
         return false;
     }
