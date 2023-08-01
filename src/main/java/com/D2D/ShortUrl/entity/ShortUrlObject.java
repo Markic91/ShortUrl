@@ -1,4 +1,4 @@
-package com.D2D.ShortUrl.dto;
+package com.D2D.ShortUrl.entity;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,14 +8,14 @@ import java.net.URL;
 
 @Component
 @JsonNaming(PropertyNamingStrategies.KebabCaseStrategy.class)
-public class ShortUrlTokenDto {
+public class ShortUrlObject {
 
     private String id;
     private String shortId;
     private URL realUrl;
     private String removalToken;
 
-    public ShortUrlTokenDto() {
+    public ShortUrlObject() {
     }
 
     public String getId() {
