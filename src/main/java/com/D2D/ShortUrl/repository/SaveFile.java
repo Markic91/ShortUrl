@@ -1,6 +1,6 @@
 package com.D2D.ShortUrl.repository;
 
-import com.D2D.ShortUrl.dto.ShortUrlTokenDto;
+import com.D2D.ShortUrl.entity.ShortUrlObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 public class SaveFile {
 
-    private final ObjectMapper objectMapper;
+    private static ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
     private final File filePath;
 
@@ -34,7 +34,7 @@ public class SaveFile {
         return filePath;
     }
 
-    public void createFile(ShortUrlTokenDto content) throws IOException {
+    public void createFile(ShortUrlObject content) throws IOException {
         File file = filePath;
 
         if (!file.exists()) {
@@ -45,7 +45,7 @@ public class SaveFile {
         }
 
 
-        List<ShortUrlTokenDto> existingContent = readExistingData(file).orElseGet(ArrayList::new); //affichage court pour ()-> new ArrayList
+        List<ShortUrlObject> existingContent = readExistingData(file).orElseGet(ArrayList::new); //affichage court pour ()-> new ArrayList
         //Appelle la méthode readExistingData pour lire le contenu existant
         // du fichier en une liste d'objets ShortUrl.
         existingContent.add(content);
@@ -57,7 +57,7 @@ public class SaveFile {
     }
 
 
-    public Optional<List<ShortUrlTokenDto>> readExistingData(File file) throws IOException {
+    public static Optional<List<ShortUrlObject>> readExistingData(File file) throws IOException {
 
         return file.exists()
                 ? Optional.of(objectMapper.readValue(file, new TypeReference<>() {
