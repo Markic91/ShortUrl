@@ -37,7 +37,7 @@ public class ShortUrlController {
     }
 
     @GetMapping("/{shortId}")
-    public ModelAndView redirectTo(@PathVariable String shortId) {
+    public ModelAndView redirectTo(@PathVariable String shortId) throws IOException {
         return new ModelAndView("redirect:" + ShortUrlService.readShortUrl(shortId));
     }
 

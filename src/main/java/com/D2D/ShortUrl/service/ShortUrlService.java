@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class ShortUrlService {
         shortUrlObject.setShortId(RandomGenerator.generateShortId());
         shortUrlObject.setRealUrl(new URL(myNewUrl.toString()));
         shortUrlObject.setRemovalToken(RandomGenerator.generateToken());
+        shortUrlObject.setAccess(LocalDateTime.now());
         savefile.addContent(shortUrlObject);
         return shortUrlObject;
     }
@@ -36,10 +38,13 @@ public class ShortUrlService {
         return false;
     }
 
-    public static String readShortUrl(String shortId) {
+    public static String readShortUrl(String shortId) throws IOException {
         List<ShortUrlObject> list = savefile.getExistingContent();
+        autoDelete();
         for (ShortUrlObject item : list) {
             if (shortId.equals(item.getShortId())) {
+                item.setAccess(LocalDateTime.now());
+                savefile.write();
                 return item.getRealUrl().toString();
             }
         }
@@ -58,7 +63,15 @@ public class ShortUrlService {
         return false;
     }
 
-    public static Boolean autoDelete() {
-        return false;
+    public static void autoDelete() throws IOException {
+        List<ShortUrlObject> list = savefile.getExistingContent();
+        LocalDateTime expirationDate = LocalDateTime.now().minusDays(30);
+        for (ShortUrlObject item : list) {
+            if ((item.getAccess().isBefore(expirationDate))) {
+                savefile.deleteContent(item);
+                return;
+            }
+        }
+        return;
     }
 }

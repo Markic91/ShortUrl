@@ -26,6 +26,7 @@ public class SaveFile {
     public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath) {
         this.objectMapper = objectMapper;
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         this.filePath = filePath;
     }
 
@@ -60,6 +61,11 @@ public class SaveFile {
 
     public void addContent(ShortUrlObject content) throws IOException {
         this.existingContent.add(content);
+        write();
+    }
+
+
+    public void write() throws IOException {
         try (FileWriter fileWriter = new FileWriter(filePath)) {
             objectMapper.writeValue(fileWriter, this.existingContent);
         }
@@ -67,10 +73,9 @@ public class SaveFile {
 
     public void deleteContent(ShortUrlObject shortUrlObject) throws IOException {
         this.existingContent.remove(shortUrlObject);
-        try (FileWriter fileWriter = new FileWriter(filePath)) {
-            objectMapper.writeValue(fileWriter, this.existingContent);
-        }
+        write();
     }
+
 
     public static Optional<List<ShortUrlObject>> readExistingData(File file) throws IOException {
         return file.exists()
