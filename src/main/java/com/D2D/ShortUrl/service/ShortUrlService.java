@@ -10,12 +10,12 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
 public class ShortUrlService {
     private static SaveFile savefile;
-
 
     public ShortUrlService(SaveFile saveFile) {
         this.savefile = saveFile;
@@ -62,7 +62,8 @@ public class ShortUrlService {
         List<ShortUrlObject> list = savefile.getExistingContent();
         for (ShortUrlObject item : list) {
             if ((id.equals(item.getId())) && (token.equals(item.getRemovalToken()))) {
-                savefile.deleteContent(item);
+                Thread t = new Thread(() -> savefile.deleteContent(item));
+                t.start();
                 return 204;
             }
             if ((id.equals(item.getId())) && !token.equals(item.getRemovalToken())) {
