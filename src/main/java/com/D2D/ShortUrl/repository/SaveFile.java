@@ -1,7 +1,6 @@
 package com.D2D.ShortUrl.repository;
 
 import com.D2D.ShortUrl.entity.ShortUrlObject;
-import com.D2D.ShortUrl.service.ShortUrlService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,12 +21,13 @@ public class SaveFile {
     private static ObjectMapper objectMapper;
     //sera utilisée pour sérialiser et désérialiser des objets Java en Json et vice versa
     private final File filePath;
-    private List<ShortUrlObject> existingContent;
+    private static List<ShortUrlObject> existingContent;
 
-    public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath) {
-        this.objectMapper = objectMapper;
-        this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath, List<ShortUrlObject> existingContent) {
+        SaveFile.objectMapper = objectMapper;
+        SaveFile.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         this.filePath = filePath;
+        SaveFile.existingContent = existingContent;
     }
 
     //Le constructor de la classe savefile initialise 'objectMapper' en créant une nelle instance
@@ -39,11 +39,11 @@ public class SaveFile {
     }
 
     public List<ShortUrlObject> getExistingContent() {
-        return existingContent;
+        return SaveFile.existingContent;
     }
 
     public void setExistingContent(List<ShortUrlObject> existingContent) {
-        this.existingContent = existingContent;
+        SaveFile.existingContent = existingContent;
     }
 
     @PostConstruct
@@ -52,10 +52,10 @@ public class SaveFile {
         try {
             if (filePath.createNewFile()) {
                 try (FileWriter fileWriter = new FileWriter(filePath)) {
-                    objectMapper.writeValue(fileWriter, new ArrayList<>());
+                    SaveFile.objectMapper.writeValue(fileWriter, new ArrayList<>());
                 }
             }
-            this.existingContent = readExistingData(filePath).orElseGet(ArrayList::new);
+            SaveFile.existingContent = readExistingData(filePath).orElseGet(ArrayList::new);
 
 
         } catch (IOException e) {
@@ -63,28 +63,34 @@ public class SaveFile {
         }
     }
 
-    public void addContent(ShortUrlObject content) throws IOException {
-        this.existingContent.add(content);
+    public void addContent(ShortUrlObject content) {
+        SaveFile.existingContent.add(content);
         write();
     }
 
 
-    public void write() throws IOException {
+    public void write() {
         try (FileWriter fileWriter = new FileWriter(filePath)) {
-            objectMapper.writeValue(fileWriter, this.existingContent);
+            SaveFile.objectMapper.writeValue(fileWriter, SaveFile.existingContent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void deleteContent(ShortUrlObject shortUrlObject) throws IOException {
-        this.existingContent.remove(shortUrlObject);
+    public void deleteContent(ShortUrlObject shortUrlObject) {
+        SaveFile.existingContent.remove(shortUrlObject);
         write();
     }
 
 
-    public static Optional<List<ShortUrlObject>> readExistingData(File file) throws IOException {
-        return file.exists()
-                ? Optional.of(objectMapper.readValue(file, new TypeReference<>() {
-        }))
-                : Optional.empty();
+    public static Optional<List<ShortUrlObject>> readExistingData(File file) {
+        try {
+            return file.exists()
+                    ? Optional.of(SaveFile.objectMapper.readValue(file, new TypeReference<>() {
+            }))
+                    : Optional.empty();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

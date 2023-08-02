@@ -5,7 +5,7 @@ import com.D2D.ShortUrl.repository.SaveFile;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +22,15 @@ public class ShortUrlService {
     }
 
 
-    public static ShortUrlObject createShortUrlWithToken(URL myNewUrl) throws IOException {
+    public static ShortUrlObject createShortUrlWithToken(URL myNewUrl) {
         ShortUrlObject shortUrlObject = new ShortUrlObject();
         shortUrlObject.setId(UUID.randomUUID().toString());
         shortUrlObject.setShortId(RandomGenerator.generateShortId());
-        shortUrlObject.setRealUrl(new URL(myNewUrl.toString()));
+        try {
+            shortUrlObject.setRealUrl(new URL(myNewUrl.toString()));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
         shortUrlObject.setRemovalToken(RandomGenerator.generateToken());
         shortUrlObject.setAccess(LocalDateTime.now());
         savefile.addContent(shortUrlObject);
@@ -34,13 +38,13 @@ public class ShortUrlService {
     }
 
     public static boolean checkUrl(URL myUrl) {
-        if (myUrl.getProtocol().equals("http") || myUrl.getProtocol().equals("https")) {
+        if ((myUrl.getProtocol().equals("http") || myUrl.getProtocol().equals("https")) && myUrl.getPort() != 8080) {
             return true;
         }
         return false;
     }
 
-    public static String readShortUrl(String shortId) throws IOException {
+    public static String readShortUrl(String shortId) {
         List<ShortUrlObject> list = savefile.getExistingContent();
 //        autoDelete();
         for (ShortUrlObject item : list) {
@@ -50,25 +54,28 @@ public class ShortUrlService {
                 return item.getRealUrl().toString();
             }
         }
-        return null;
+        throw new RuntimeException();
     }
 
 
-    public static Boolean deleteOneShortUrl(String id, String token) throws IOException {
+    public static int deleteOneShortUrl(String id, String token) {
         List<ShortUrlObject> list = savefile.getExistingContent();
         for (ShortUrlObject item : list) {
             if ((id.equals(item.getId())) && (token.equals(item.getRemovalToken()))) {
                 savefile.deleteContent(item);
-                return true;
+                return 204;
+            }
+            if ((id.equals(item.getId())) && !token.equals(item.getRemovalToken())) {
+                return 403;
             }
         }
-        return false;
+        return 404;
     }
 
     @PostConstruct
-    public void autoDelete() throws IOException {
+    public void autoDelete() {
         List<ShortUrlObject> list = savefile.getExistingContent();
-        LocalDateTime expirationDate = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime expirationDate = LocalDateTime.now().minusDays(30);
         List<ShortUrlObject> newList = list.stream().filter(item -> item.getAccess().isAfter(expirationDate)).collect(Collectors.toList());
         savefile.setExistingContent(newList);
         savefile.write();
