@@ -2,6 +2,7 @@ package com.D2D.ShortUrl.service;
 
 import com.D2D.ShortUrl.entity.ShortUrlObject;
 import com.D2D.ShortUrl.repository.SaveFile;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class ShortUrlService {
@@ -40,7 +42,7 @@ public class ShortUrlService {
 
     public static String readShortUrl(String shortId) throws IOException {
         List<ShortUrlObject> list = savefile.getExistingContent();
-        autoDelete();
+//        autoDelete();
         for (ShortUrlObject item : list) {
             if (shortId.equals(item.getShortId())) {
                 item.setAccess(LocalDateTime.now());
@@ -63,15 +65,12 @@ public class ShortUrlService {
         return false;
     }
 
-    public static void autoDelete() throws IOException {
+    @PostConstruct
+    public void autoDelete() throws IOException {
         List<ShortUrlObject> list = savefile.getExistingContent();
-        LocalDateTime expirationDate = LocalDateTime.now().minusDays(30);
-        for (ShortUrlObject item : list) {
-            if ((item.getAccess().isBefore(expirationDate))) {
-                savefile.deleteContent(item);
-                return;
-            }
-        }
-        return;
+        LocalDateTime expirationDate = LocalDateTime.now().minusMinutes(1);
+        List<ShortUrlObject> newList = list.stream().filter(item -> item.getAccess().isAfter(expirationDate)).collect(Collectors.toList());
+        savefile.setExistingContent(newList);
+        savefile.write();
     }
 }

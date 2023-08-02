@@ -1,6 +1,7 @@
 package com.D2D.ShortUrl.repository;
 
 import com.D2D.ShortUrl.entity.ShortUrlObject;
+import com.D2D.ShortUrl.service.ShortUrlService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -26,7 +27,6 @@ public class SaveFile {
     public SaveFile(ObjectMapper objectMapper, @Value("${file.path}") File filePath) {
         this.objectMapper = objectMapper;
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         this.filePath = filePath;
     }
 
@@ -42,6 +42,9 @@ public class SaveFile {
         return existingContent;
     }
 
+    public void setExistingContent(List<ShortUrlObject> existingContent) {
+        this.existingContent = existingContent;
+    }
 
     @PostConstruct
     public void createFile() {
@@ -53,6 +56,7 @@ public class SaveFile {
                 }
             }
             this.existingContent = readExistingData(filePath).orElseGet(ArrayList::new);
+
 
         } catch (IOException e) {
             System.out.println("Une erreur s'est produite lors de la création du fichier : " + e.getMessage());
